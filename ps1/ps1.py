@@ -36,7 +36,10 @@ def mergeSort(arr):
 
     return merge(half1, half2)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b363da36f1ed92c8d09dfcf7ec3f077ca399a54e
 def countSort(arr, univsize):
     universe = []
     for i in range(univsize + 1):
@@ -51,6 +54,7 @@ def countSort(arr, univsize):
             sortedArr.append(elt)
 
     return sortedArr
+<<<<<<< HEAD
 
 
 def useCountSort(arr, b, i): 
@@ -82,3 +86,5 @@ def radixSort(arr, n, U, b):
 # arr = [(170, 'a'), (45, 'b'), (75, 'c'), (90, 'd'), (24, 'f'), (2, 'g'), (66, 'h')]
 
 # print(radixSort(arr, 10, 200, 10))
+=======
+>>>>>>> b363da36f1ed92c8d09dfcf7ec3f077ca399a54e
