@@ -16,12 +16,12 @@ def merge(arr1, arr2):
         elif j >= len(arr2):
             sortedArr.append(arr1[i])
             i += 1
-        elif arr1[i][0] >= arr2[j][0]:
-            sortedArr.append(arr2[j])
-            j += 1
-        else:
+        elif arr1[i][0] <= arr2[j][0]:
             sortedArr.append(arr1[i])
             i += 1
+        else:
+            sortedArr.append(arr2[j])
+            j += 1
 
     return sortedArr
 
@@ -36,16 +36,14 @@ def mergeSort(arr):
 
     return merge(half1, half2)
 
-def countSort(arr, univsize, ind=-1):
+
+def countSort(arr, univsize):
     universe = []
-    for i in range(univsize):
+    for i in range(univsize + 1):
         universe.append([])
 
     for elt in arr:
-        if ind != -1:
-            universe[elt[0][ind]].append(elt)
-        else:
-            universe[elt[0]].append(elt)
+        universe[elt[0]].append(elt)
 
     sortedArr = []
     for lst in universe:
@@ -53,3 +51,34 @@ def countSort(arr, univsize, ind=-1):
             sortedArr.append(elt)
 
     return sortedArr
+
+
+def useCountSort(arr, b, i): 
+    temp_array = []
+    for elt in arr:
+        place_val = (elt[0] // (b ** i)) % b
+        temp_array.append((place_val, elt[1], elt[0]))
+    temp_arr = countSort(temp_array, b)
+
+    output_arr = []
+    for elt in temp_arr: 
+        output_arr.append((elt[2], elt[1]))
+    return output_arr
+
+def radixSort(arr, n, U, b): 
+    # to be clear, n = length of the array, and also the base
+    # find amount of digits
+    # needs to do floor + 1 because for certain examples like 
+        # 100 with base 10 we would get digits = 2, but it's actually 3
+    digits = math.floor(math.log(U, b)) + 1
+
+    # create a copy of the array to sort
+    output_arr = arr 
+    # use Count Sort by digit!
+    for i in range(0, digits): 
+        output_arr = useCountSort(output_arr, b, i)
+    return output_arr
+
+# arr = [(170, 'a'), (45, 'b'), (75, 'c'), (90, 'd'), (24, 'f'), (2, 'g'), (66, 'h')]
+
+# print(radixSort(arr, 10, 200, 10))
