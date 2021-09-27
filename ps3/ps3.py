@@ -60,8 +60,9 @@ class BinarySearchTree:
         if left_size > ind and self.left is not None:
             return self.left.select(ind)
         if left_size < ind and self.right is not None:
-            return self.right.select(ind)
+            return self.right.select(ind - left_size - 1)
         return None
+
 
 
     '''
@@ -89,8 +90,11 @@ class BinarySearchTree:
     returns the original (top level) tree - allows for easy chaining in tests
     '''
     def insert(self, key):
+        # increase size by 1 for every node on access path
+        self.size += 1
         if self.key is None:
             self.key = key
+            self.size = 1
         elif self.key > key: 
             if self.left is None:
                 self.left = BinarySearchTree(self.debugger)
@@ -99,7 +103,6 @@ class BinarySearchTree:
             if self.right is None:
                 self.right = BinarySearchTree(self.debugger)
             self.right.insert(key)
-        self.calculate_sizes()
         return self
 
     
@@ -110,8 +113,38 @@ class BinarySearchTree:
     Returns the root of the tree or None if the tree has no nodes   
     '''
     def delete(self, key):
-        # Your code goes here
-        pass
+        # create helper function to find max 
+        def findmax(node): 
+            current = node 
+            while (current.right is not None): 
+                current = current.right 
+            return current
+
+        # check to see if node is in the tree
+        if BinarySearchTree.search(self, key) is None:
+            return self
+        
+        # decrease size by 1 for every node on access path
+        self.size -= 1
+
+        if key < self.key: 
+            self.left = self.left.delete(key)
+        elif key > self.key: 
+            self.right = self.right.delete(key)
+        else: 
+            # nodes with one or zero children
+            if self.left is None: 
+                self = self.right 
+                return self 
+            elif self.right is None: 
+                self = self.left 
+                return self
+            # nodes with two children, gotta rotate shebangalang
+            else:
+                temp = findmax(self.left)
+                self.key = temp.key 
+                self.left = self.left.delete(temp.key)
+        return self
 
     '''
     Performs a `direction`-rotate the `side`-child of (the root of) T (self)
@@ -140,7 +173,16 @@ class BinarySearchTree:
        11 
     '''
     def rotate(self, direction, child_side):
-        # Your code goes here
+        if direction == "R": 
+            if child_side == "L":
+                temp = self.left.right
+                self.right = self 
+                self.left = temp
+                return self
+            else:
+                return 
+        else: 
+            return
         return self
 
     def print_bst(self):

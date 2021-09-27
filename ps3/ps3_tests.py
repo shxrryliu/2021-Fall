@@ -355,13 +355,13 @@ def test():
             "expected": None,
             "show_expectation": True
         },
-        {
-            "label": "Basic Delete 2.1c",
-            "input": init_tree(10),
-            "test": lambda T: T.delete(11).key,
-            "expected": 10,
-            "show_expectation": True
-        },
+         {
+             "label": "Basic Delete 2.1c",
+             "input": init_tree(10),
+             "test": lambda T: T.delete(11).key,
+             "expected": 10,
+             "show_expectation": True
+         },
         {
             "label": "Basic Delete 2.1d",
             "input": init_tree(10).insert(11).insert(12),
