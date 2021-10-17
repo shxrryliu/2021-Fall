@@ -121,30 +121,36 @@ class BinarySearchTree:
             return current
 
         # check to see if node is in the tree
-        if BinarySearchTree.search(self, key) is None:
+        if self.search(key) is None:
             return self
         
         # decrease size by 1 for every node on access path
-        self.size -= 1
-
-        if key < self.key: 
-            self.left = self.left.delete(key)
-        elif key > self.key: 
-            self.right = self.right.delete(key)
-        else: 
-            # nodes with one or zero children
-            if self.left is None: 
-                self = self.right 
-                return self 
-            elif self.right is None: 
-                self = self.left 
+        def helper(self, key):
+            if self is None: 
                 return self
-            # nodes with two children, gotta rotate shebangalang
-            else:
-                temp = findmax(self.left)
-                self.key = temp.key 
-                self.left = self.left.delete(temp.key)
-        return self
+            
+            self.size -= 1
+            if key < self.key: 
+                self.left = helper(self.left, key)
+            elif key > self.key: 
+                self.right = helper(self.right, key)
+            else: 
+                # nodes with one or zero children
+                if self.left is None: 
+                    return self.right 
+                elif self.right is None: 
+                    return self.left
+                # nodes with two children, gotta rotate shebangalang
+                else:
+                    new = findmax(self.left)
+                    new.right = self.right
+                    new.left = helper(self.left, new.key)
+                    new.size = self.size - 1
+                    return new
+            return self
+        
+        return helper(self, key)
+    
 
     '''
     Performs a `direction`-rotate the `side`-child of (the root of) T (self)
@@ -172,17 +178,78 @@ class BinarySearchTree:
         /
        11 
     '''
+
     def rotate(self, direction, child_side):
-        if direction == "R": 
-            if child_side == "L":
-                temp = self.left.right
-                self.right = self 
+        # store sizes
+        size_r = 0 if self.right is None else self.right.size
+        size_l = 0 if self.left is None else self.left.size
+
+        if direction == "L":
+            if child_side == "R":
+                # store sizes
+                size_rr = self.right.right.size
+                if self.right.right.left: 
+                    size_rrl = self.right.right.left.size 
+                else: 
+                    size_rrl = 0
+
+                # perform rotation 
+                temp = self.right.right
+                self.right.right = temp.left
+                temp.left = self.right 
+                self.right = temp
+
+                # recalculate sizes 
+                self.right.size = size_r
+                self.right.left.size = size_r - size_rr + size_rrl
+            else: #child_side == "L"
+                # store sizes 
+                size_lr = self.left.right.size 
+                if self.left.right.left: 
+                    size_lrl = self.left.right.left.size 
+                else: 
+                    size_lrl = 0
+
+                # perform rotation
+                temp = self.left 
+                temp2 = self.left.right 
+                temp.right = temp2.left 
+                temp2.left = temp 
+                self.left = temp2
+
+                # recalculate sizes
+                self.left.size = size_l
+                self.left.left.size = size_l - size_lr + size_lrl
+        else: #direction == "R"
+            if child_side == "L": 
+                # store sizes 
+                size_ll = self.left.left.size 
+                size_llr = 0 if self.left.left.right is None else self.left.left.right.size 
+
+                # perform rotation
+                temp = self.left.left 
+                self.left.left = temp.right 
+                temp.right = self.left 
                 self.left = temp
-                return self
-            else:
-                return 
-        else: 
-            return
+
+                # recalculate sizes
+                self.left.size = size_l 
+                self.left.right.size = size_l - size_ll + size_llr
+            else: # child_side == "R"
+                # store sizes 
+                size_rl = self.right.left.size
+                size_rlr = 0 if self.right.left.right is None else self.right.left.right.size
+
+                #perform rotation
+                temp = self.right
+                temp2 = self.right.left 
+                temp.left = temp2.right
+                temp2.right = temp 
+                self.right = temp2
+
+                # recalculate sizes
+                self.right.size = size_r
+                self.right.right.size = size_r - size_rl + size_rlr
         return self
 
     def print_bst(self):
