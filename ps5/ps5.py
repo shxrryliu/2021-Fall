@@ -95,7 +95,7 @@ def MergeSortSelect(arr, query_list):
 
 def experiments():
     # Edit this parameter
-    k = [15, 16, 17, 18, 19]
+    k = [9, 10, 11, 12, 13, 14]
     
     
     # Feel free to edit these initial parameters
