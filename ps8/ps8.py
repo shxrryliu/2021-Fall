@@ -1,5 +1,7 @@
 from itertools import product, combinations
 from pysat.solvers import Glucose3
+import collections
+
 
 '''
 Before you start: Read the README and the Graph implementation below.
@@ -140,8 +142,31 @@ def bfs_2_coloring(G, precolored_nodes=None):
     # TODO: Complete this function by implementing two-coloring using the colors 0 and 1.
     # If there is no valid coloring, reset all the colors to None using G.reset_colors()
     
-    G.reset_colors()
-    return None
+    while len(visited) < G.N:
+
+        # ignore visited create subset
+        for i in range(G.N): 
+            if i in visited: 
+                continue 
+            else: 
+                c = collections.deque([i])
+                G.colors[i] = 0
+                break 
+        
+
+        # color the remaining graph 
+        while c:
+            curr = c.popleft()
+            visited.add(curr)
+            for neighbor in G.edges[curr]: 
+                if neighbor not in visited: 
+                    c.append(neighbor)
+                    G.colors[neighbor] = (G.colors[curr] + 1) % 2
+                elif G.colors[curr] == G.colors[neighbor]:
+                    G.reset_colors()
+                    return None
+
+    return G.colors
 
 '''
     Part B: Implement the 3-coloring algorithm from active learning.
@@ -165,7 +190,11 @@ def bfs_2_coloring(G, precolored_nodes=None):
 
 # Given an instance of the Graph class G and a subset of precolored nodes, searches for a 3 coloring
 def iset_bfs_3_coloring(G):
-    # TODO: Complete this function.
+    for size in range(1, G.N):
+        for combo in combinations(range(G.N), size): 
+            if bfs_2_coloring(G, combo): 
+                return G.colors
+
 
     G.reset_colors()
     return None
@@ -193,6 +222,12 @@ def sat_3_coloring(G):
     solver = Glucose3()
 
     # TODO: Add the clauses to the solver
+    for i in range(G.N): 
+        solver.add_clause([3*i + 1, 3*i + 2, 3*i + 3])
+        for j in G.edges[i]:
+            solver.add_clause([-(3*i + 1), -(3*j + 1)])
+            solver.add_clause([-(3*i + 2), -(3*j + 2)])
+            solver.add_clause([-(3*i + 3), -(3*j + 3)])
 
     # Attempt to solve, return None if no solution possible
     if not solver.solve():
@@ -203,6 +238,10 @@ def sat_3_coloring(G):
     solution = solver.get_model()
     
     # TODO: If a solution is found, convert it into a coloring and update G.colors
+    for i in range(G.N): 
+        for j in range(3):
+            if solution[3*i + j] >= 0:
+                G.colors[i] = j
 
     return G.colors
 
